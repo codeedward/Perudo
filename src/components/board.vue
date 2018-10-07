@@ -47,7 +47,10 @@ export default {
         })
       },
       createNewGame(){
-        this.$store.dispatch('createNewGame');
+        this.$store.dispatch('createNewGame')
+        .then((data)=>{
+          this.$router.replace('game/'+ data.gameId);
+        });
       }
   },
   mounted: function() {

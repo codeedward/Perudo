@@ -44,7 +44,6 @@ export const store = new Vuex.Store({
                             let player = playerDoc.data();
                             player.id = playerDoc.id;
                             playersArray.push(player);
-                            console.log('read player:' + player.email)
                         });
                         game.players = playersArray;
                     });
@@ -54,24 +53,28 @@ export const store = new Vuex.Store({
                 commit('setAvailableGames', gamesArray);
             });
         },
-        createNewGame({ store }){
-            console.log('create new game');
-            fb.gamesCollection.add({
-                name: 'Game' + Date.now(),
-                createdOn: new Date(),
-                status: 1,
-                maxDices: 6,
-                activePlayer: 1,
-                activeBet: '',
-                createdByUid: this.state.currentUser.uid//,  
-                //players: [this.state.currentUser.uid] 
-            }).then((data)=>{
-                // var gamePLayerRef = fb.gamesCollection.doc(data.gameId).collection('players').doc(this.state.currentUser.uid);
-                // dispatch('addPlayerIntoGame', {gamePLayerRef: gamePLayerRef});  
-            })
-            .catch(err => {
-                console.log(err)
-            })
+        createNewGame({ dispatch }){
+            return new Promise((resolve, reject) => {
+                fb.gamesCollection.add({
+                    name: 'Game' + Date.now(),
+                    createdOn: new Date(),
+                    status: 1,
+                    maxDices: 5,
+                    activePlayer: 1,
+                    activeBet: '',
+                    createdByUid: this.state.currentUser.uid
+                }).then((data)=>{
+                    var gameId = data.id;
+                    dispatch('addPlayerIntoGame', {gameId: gameId})
+                    .then(()=>{
+                        resolve({gameId});
+                    });  
+                })
+                .catch(err => {
+                    reject();
+                    console.log(err)
+                })
+            });
         },
         leaveTheGame({store}, data){
             var gameId = data.gameId;
@@ -91,28 +94,18 @@ export const store = new Vuex.Store({
             });
         },
         addPlayerIntoGame({store}, data){
-            console.log('addPlayerIntoGame');
             var gameId = data.gameId;
             var currentUser = this.state.currentUser;
             var playerNum = 0;
-            var numOfDices = 6;
+            var numOfDices = this.getters.getGame(gameId).maxDices;
 
             var gamePlayerRef = fb.gamesCollection.doc(gameId).collection('players').doc(currentUser.uid);
-            gamePlayerRef.set({
+            return gamePlayerRef.set({
                 email: currentUser.email,
                 playerNum: playerNum,
                 numOfDices: numOfDices,
                 currentRoll: []
             })
-        },
-        fetchGame({store}, data) {
-            fb.gamesCollection.doc(data.gameId).onSnapshot(querySnapshot => {
-                var result = null;
-                if(querySnapshot.exists){
-                    result = querySnapshot.data();
-                }
-                return result;
-            });
         },
         changeGameStatus({}, data){
             var gameId = data.gameId;
@@ -123,11 +116,11 @@ export const store = new Vuex.Store({
         startGame({dispatch}, data){
             dispatch('changeGameStatus', data)
             .then((requestData)=>{
-                dispatch('setUsersNumbers', data).then(()=>{
+                dispatch('setUsersNumbers', data)
+                .then(()=>{
                     dispatch('setUsersRolledDices', data);
                 });
             })
-            
         },
         setUsersNumbers({}, data){
             var gameId = data.gameId;
@@ -142,7 +135,6 @@ export const store = new Vuex.Store({
             batch.commit();
         },
         setUsersRolledDices({}, data){
-            console.log('setUsersRolledDices');
             var gameId = data.gameId;
             var players = this.getters.getGame(gameId).players;
             var batch = fb.db.batch();
