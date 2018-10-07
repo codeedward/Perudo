@@ -1,0 +1,19 @@
+Player status - not needed anymore
+
+Game status:
+1 - before the game
+2 - in game
+3 - finished
+
+
++ przycisk start gry tylko dla tworcy gry -> zmiana statusu gry
++ wyswietlanie odpowiedniego diva gdy gra jest aktywna
++ sprawdzanie statusu gry i odrzucanie nowych graczy
++ losowe autonumerowanie graczy przy rozpoczeciu gry
+- losowanie kosci przy starcie gry
+- wyswietlic liste graczy
+
+- mozliwosc wykonania jednej z akcji (sprawdzenie, podbicie, spot)
+- zapisanie akcji do uzytkownika i sprawdzenie warunkow gry
+- zmiana na kolejnego gracza
+- zakonczenie rundy i start nowej
