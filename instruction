@@ -10,8 +10,8 @@ Game status:
 + wyswietlanie odpowiedniego diva gdy gra jest aktywna
 + sprawdzanie statusu gry i odrzucanie nowych graczy
 + losowe autonumerowanie graczy przy rozpoczeciu gry
-- losowanie kosci przy starcie gry
-- wyswietlic liste graczy
++ losowanie kosci przy starcie gry
++ wyswietlic liste graczy
 
 - mozliwosc wykonania jednej z akcji (sprawdzenie, podbicie, spot)
 - zapisanie akcji do uzytkownika i sprawdzenie warunkow gry

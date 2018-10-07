@@ -10,28 +10,20 @@ export const store = new Vuex.Store({
         availableGames: null
     },
     getters: {
-        // generatePlayerGameNumber: (state) => (gameId) => {
-        //     var currentGame = state.availableGames.find((el)=> { 
-        //         return el.id == gameId
-        //     });
-
-        //     var generatedNumber = 1;
-        //     while(true)
-        //     {
-        //         var numberExists = currentGame.players.find(x => x.playerNum == generatedNumber) != null;
-        //         if(!numberExists) {
-        //             break;
-        //         }
-        //         ++generatedNumber;
-        //     }
-        //     return generatedNumber;
-        // }
         getGame: (state) => (gameId) => {
             var foundGame = state.availableGames.find((el)=> { 
                 return el.id == gameId
             });
             return foundGame;
-        }
+        },
+        rollTheDices: () => (dicesNum) => {
+            var result = [];
+            for(var i=0; i<dicesNum; i++){
+                var randomDice = Math.floor(6*Math.random())+1;
+                result.push(randomDice);
+            }
+            return result;
+        },
     },
     actions: {
         setCurrentUser({ commit }, data) {
@@ -102,7 +94,7 @@ export const store = new Vuex.Store({
             console.log('addPlayerIntoGame');
             var gameId = data.gameId;
             var currentUser = this.state.currentUser;
-            var playerNum = 0;//this.getters.generatePlayerGameNumber(gameId);
+            var playerNum = 0;
             var numOfDices = 6;
 
             var gamePlayerRef = fb.gamesCollection.doc(gameId).collection('players').doc(currentUser.uid);
@@ -131,8 +123,11 @@ export const store = new Vuex.Store({
         startGame({dispatch}, data){
             dispatch('changeGameStatus', data)
             .then((requestData)=>{
-                dispatch('setUsersNumbers', data);
-            });  
+                dispatch('setUsersNumbers', data).then(()=>{
+                    dispatch('setUsersRolledDices', data);
+                });
+            })
+            
         },
         setUsersNumbers({}, data){
             var gameId = data.gameId;
@@ -143,6 +138,19 @@ export const store = new Vuex.Store({
             for(var i=0; i < players.length; i++){
                 var playerRf = fb.gamesCollection.doc(gameId).collection('players').doc(players[i].id);
                 batch.update(playerRf, {"playerNum": i+1});
+            }
+            batch.commit();
+        },
+        setUsersRolledDices({}, data){
+            console.log('setUsersRolledDices');
+            var gameId = data.gameId;
+            var players = this.getters.getGame(gameId).players;
+            var batch = fb.db.batch();
+
+            for(var i=0; i < players.length; i++){
+                var playerRf = fb.gamesCollection.doc(gameId).collection('players').doc(players[i].id);
+                let currentRoll = this.getters.rollTheDices(players[i].numOfDices);
+                batch.update(playerRf, {"currentRoll": currentRoll});
             }
             batch.commit();
         }

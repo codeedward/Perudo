@@ -8,7 +8,9 @@
       <div>Status: {{ gameInstance.status }}</div>
       <div>Players: {{ gameInstance.players.length }}</div>
       <ul style="border:solid black 1px;">
-        <li :key="player.id" v-for="player in gameInstance.players">{{player.email}} [NR: {{player.playerNum}}]</li>
+        <li :key="player.id" v-for="player in gameInstance.players">{{player.email}} [NR: {{player.playerNum}}] 
+          <span :key="player.id+'_'+roll+'_'+index" v-for="(roll,index) in player.currentRoll">{{roll}}</span>
+        </li>
       </ul>
     </div>
 
