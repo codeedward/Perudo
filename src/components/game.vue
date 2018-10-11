@@ -11,6 +11,7 @@
         <br>
         <div :key="player.id" v-for="player in gameInstance.players">{{player.email}} [NR: {{player.playerNum}}] 
           <span :key="player.id+'_'+roll+'_'+index" v-for="(roll,index) in player.currentRoll">{{roll}}</span>
+          <span>(quantity: {{player.betQuantity}}, number: {{player.betNumber}})</span>
           <span v-if="player.playerNum == gameInstance.activePlayerNum"> ----------------------------- Active player</span>
         </div>
          <br>
@@ -92,6 +93,16 @@ export default {
         }
         return players[previousPlayerIndex];
     },
+    nextPlayer: function () {
+        var players = this.activePlayers;
+        var currentPlayerIndex = players.findIndex(x=> x.playerNum == this.currentPlayer.playerNum);
+        console.log("currentPLayer index:"+currentPlayerIndex)
+        var previousPlayerIndex = currentPlayerIndex + 1;
+        if(previousPlayerIndex > (players.length-1)){
+          previousPlayerIndex = 0;
+        }
+        return players[previousPlayerIndex];
+    },
     isActivePlayer (){
       return this.gameInstance && this.currentPlayer ? (this.gameInstance.activePlayerNum == this.currentPlayer.playerNum) : false;
     },
@@ -140,23 +151,37 @@ export default {
       var previousPlayer = this.previousPlayer;
       var sumOfNumbers = this.countNumberInTheGame(previousPlayer.betNumber);
       if(sumOfNumbers > previousPlayer.betQuantity){
-        alert("Previous player was wrong and lost the dice!");
+        alert("Bet was "+previousPlayer.betQuantity+"x"+previousPlayer.betNumber+". Previous player was right! You lost the dice! It was "+sumOfNumbers+" of them.");
       }
       else {
-        alert("Previous player was right! You lost the dice!");
+        alert("Bet was "+previousPlayer.betQuantity+"x"+previousPlayer.betNumber+". Previous player was wrong and lost the dice! It was "+sumOfNumbers+" of them.");
       }
     },
     playYourBet(){
       //chech if bet is correct
-      //save the player bet
+      this.$store.dispatch("setPlayerBet", {
+        gameId: this.currentGameId,
+        betType: betAction,
+        betQuantity: this.betQuantity,
+        betNumber: this.betNumber
+      }).then(data => {
+        console.log("before setActivePlayer");
+        console.log(this.currentGameId);
+        console.log(this.nextPlayer.playerNum);
+        this.$store.dispatch("setActivePlayer", {
+          gameId: this.currentGameId,
+          activePlayerNum: this.nextPlayer.playerNum
+        })
+      });
+      
       //active player change to next one
     },
     countNumberInTheGame(numberToCount){
       var sum = 0;
-      var players = this.gameInstance.players;
-      for(var i=0; i<players.count; i++){
+      var players = this.activePlayers;
+      for(var i=0; i<players.length; i++){
         var player = players[i];
-        sum+= player.currenRoll.filter(function(x){return x == numberToCount}).length;
+        sum+= player.currentRoll.filter(function(x){return x == numberToCount}).length;
       }
       return sum;
     },

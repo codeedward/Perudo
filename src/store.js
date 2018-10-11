@@ -147,6 +147,26 @@ export const store = new Vuex.Store({
                 batch.update(playerRf, {"currentRoll": currentRoll});
             }
             batch.commit();
+        },
+        setPlayerBet({}, data){
+            var gameId = data.gameId;
+            var currentUser = this.state.currentUser;
+            var betType = data.betType;
+            var betNumber = data.betNumber;
+            var betQuantity = data.betQuantity;
+            var playerRef = fb.gamesCollection.doc(gameId).collection("players").doc(currentUser.uid);
+            return playerRef.update({betType, betNumber, betQuantity});
+        },
+        setActivePlayer({}, data){
+            var gameId = data.gameId;
+            var activePlayerNum = data.activePlayerNum;
+          
+            console.log("setActivePlayer");
+            console.log(gameId);
+            console.log(activePlayerNum);
+
+            var gameRef = fb.gamesCollection.doc(gameId);
+            return gameRef.update({activePlayerNum});
         }
     }, 
     mutations: {
