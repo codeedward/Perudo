@@ -3,15 +3,25 @@
     <h1>{{ msg }}</h1>
     <div v-if="gameInstance && gameInstance.status == 2">
       <div>Name: {{ gameInstance.name }}</div>
-      <div>Active player: {{ gameInstance.activePlayer }}</div>
+      <div>Active player: {{ gameInstance.activePlayerNum }}</div>
       <div>Max dices: {{ gameInstance.maxDices }}</div>
       <div>Status: {{ gameInstance.status }}</div>
       <div>Players: {{ gameInstance.players.length }}</div>
-      <ul style="border:solid black 1px;">
-        <li :key="player.id" v-for="player in gameInstance.players">{{player.email}} [NR: {{player.playerNum}}] 
+      <div style="border:solid black 1px;">
+        <br>
+        <div :key="player.id" v-for="player in gameInstance.players">{{player.email}} [NR: {{player.playerNum}}] 
           <span :key="player.id+'_'+roll+'_'+index" v-for="(roll,index) in player.currentRoll">{{roll}}</span>
-        </li>
-      </ul>
+          <span v-if="player.playerNum == gameInstance.activePlayerNum"> ----------------------------- Active player</span>
+        </div>
+         <br>
+      </div>
+      <div v-if="isActivePlayer">
+        <input v-if="canPlaySpotOn" v-on:click="playSpotOn" type="button" value="Spot on"/>
+        <input v-if="canPlayDoubtIt" v-on:click="playDoubtIt" type="button" value="I doubt it!"/>
+        <input v-on:click="playYourBet" type="button" value="Make a bet!"/>
+        Quantity:<input type="number" v-model="betQuantity"/>
+        Number:<input type="number" v-model="betNumber"/>
+      </div>
     </div>
 
     <div v-else>
@@ -30,12 +40,16 @@ import firebase from 'firebase'
 import {mapState} from 'vuex'
 const fb = require('../firebaseConfig.js')
 
+const betAction = 'bet'
+
 export default {
   name: 'game',
   props: ['id'],
   data () {
     return {
-      msg: 'Content'
+      msg: 'Content',
+      betQuantity: 0,
+      betNumber: 0
     }
   },
   computed:{
@@ -53,11 +67,42 @@ export default {
         }
         return currentGame;
     },
+    currentGameId (){
+      return this.gameInstance ? this.gameInstance.id : null;
+    },
+    activePlayers(){
+      return this.gameInstance.players.filter(el=> el.numOfDices > 0);
+    },
+    currentPlayer: function () {
+        var currentPlayer = null;
+        var players = this.gameInstance.players;
+        if(players){
+          currentPlayer = players.find((el)=> { 
+              return el.id == this.currentUser.uid;
+          });
+        }
+        return currentPlayer;
+    },
+    previousPlayer: function () {
+        var players = this.activePlayers;
+        var currentPlayerIndex = players.findIndex(x=> x.playerNum == this.currentPlayer.playerNum);
+        var previousPlayerIndex = currentPlayerIndex - 1;
+        if(previousPlayerIndex < 0){
+          previousPlayerIndex = this.activePlayers.length - 1;
+        }
+        return players[previousPlayerIndex];
+    },
+    isActivePlayer (){
+      return this.gameInstance && this.currentPlayer ? (this.gameInstance.activePlayerNum == this.currentPlayer.playerNum) : false;
+    },
     isGameOwner () {
       return (this.currentUser && this.gameInstance) ? (this.currentUser.uid == this.gameInstance.createdByUid) : false;
     },
-    currentGameId (){
-      return this.gameInstance ? this.gameInstance.id : null;
+    canPlayDoubtIt(){
+      return this.previousPlayer.betType == betAction;
+    },
+    canPlaySpotOn(){
+      return this.canPlayDoubtIt;
     }
   },
   methods: {
@@ -87,7 +132,55 @@ export default {
       if(!this.$store.state.availableGames){
         this.fetchGames();
       }
+    },
+    playSpotOn(){
+
+    },
+    playDoubtIt(){
+      var previousPlayer = this.previousPlayer;
+      var sumOfNumbers = this.countNumberInTheGame(previousPlayer.betNumber);
+      if(sumOfNumbers > previousPlayer.betQuantity){
+        alert("Previous player was wrong and lost the dice!");
+      }
+      else {
+        alert("Previous player was right! You lost the dice!");
+      }
+    },
+    playYourBet(){
+      //chech if bet is correct
+      //save the player bet
+      //active player change to next one
+    },
+    countNumberInTheGame(numberToCount){
+      var sum = 0;
+      var players = this.gameInstance.players;
+      for(var i=0; i<players.count; i++){
+        var player = players[i];
+        sum+= player.currenRoll.filter(function(x){return x == numberToCount}).length;
+      }
+      return sum;
+    },
+    getPlayerByNum(playerNum){
+        var result = null;
+        var players = this.gameInstance.players;
+        if(players){
+          result = players.find((el)=> { 
+              return el.playerNum == playerNum;
+          });
+        }
+        return result;
+    },
+    getPlayerByUid(userUid){
+        var result = null;
+        var players = this.gameInstance.players;
+        if(players){
+          result = players.find((el)=> { 
+              return el.id == userUid;
+          });
+        }
+        return result;
     }
+    
   },
   mounted: function() {
     console.log("game mounted")

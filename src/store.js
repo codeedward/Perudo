@@ -60,8 +60,7 @@ export const store = new Vuex.Store({
                     createdOn: new Date(),
                     status: 1,
                     maxDices: 5,
-                    activePlayer: 1,
-                    activeBet: '',
+                    activePlayerNum: 1,
                     createdByUid: this.state.currentUser.uid
                 }).then((data)=>{
                     var gameId = data.id;
@@ -104,7 +103,10 @@ export const store = new Vuex.Store({
                 email: currentUser.email,
                 playerNum: playerNum,
                 numOfDices: numOfDices,
-                currentRoll: []
+                currentRoll: [],
+                betType: '',
+                betNumber: 0,
+                betQuantity: 0,
             })
         },
         changeGameStatus({}, data){
