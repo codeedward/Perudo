@@ -1,7 +1,7 @@
 <template>
-  <div id="game">
+  <div v-if="gameInstance" id="game">
     <h1>{{ msg }}</h1>
-    <div v-if="gameInstance && (gameInstance.status == 1 || gameInstance.status == 2)">
+    <div v-if="(gameInstance.status == 1 || gameInstance.status == 2)">
       <div>Name: {{ gameInstance.name }}</div>
       <div>Active player: {{ gameInstance.activePlayerNum }}</div>
       <div>Max dices: {{ gameInstance.maxDices }}</div>
@@ -9,7 +9,9 @@
       <div>Players: {{ gameInstance.players.length }}</div>
     </div>
 
-    <div v-if="gameInstance && gameInstance.status == 2">
+    <h1 v-if="!isStillInTheGame">Unfortunatelly you lost this time</h1>
+    <h1 v-if="isTheWinner">Congratulatinos! You won the game!</h1>
+    <div v-if="gameInstance.status == 2">
       <div style="border:solid black 1px;">
         <br>
         <div :key="player.id" v-for="player in gameInstance.players">{{player.email}} [NR: {{player.playerNum}}] 
@@ -124,6 +126,13 @@ export default {
     },
     canPlaySpotOn(){
       return this.canPlayDoubtIt;
+    },
+    isStillInTheGame () {
+      return (this.currentPlayer && this.gameInstance && this.gameInstance.status == 2) ? (this.currentPlayer.numOfDices > 0) : true;
+    },
+    isTheWinner () {
+      //return (this.currentUser && this.gameInstance && this.gameInstance.status == 2) ? (this.currentPlayer.numOfDices > 0) : false;
+      return false;
     }
   },
   methods: {
@@ -155,16 +164,62 @@ export default {
       }
     },
     playSpotOn(){
-
+      var previousPlayer = this.previousPlayer;
+      var sumOfNumbers = this.countNumberInTheGame(previousPlayer.betNumber);
+      if(sumOfNumbers == previousPlayer.betQuantity){
+        alert("Spot on! You won the dice!")
+        this.$store.dispatch("finishRound", {
+          gameId: this.currentGameId,
+          playerToChangeLivesId: this.currentPlayer.id,
+          livesChange: 1,
+          nextRoundActivePlayerNum: this.currentPlayer.playerNum
+        })
+      }
+      else {
+        alert("Bet was "+previousPlayer.betQuantity+"x"+previousPlayer.betNumber+". Unfortunatelly you lost the dice! It was "+sumOfNumbers+" of them.");
+        var nextRoundActivePlayerNum = this.currentPlayer.playerNum;
+        if(this.currentPlayer.numOfDices < 2) {
+          nextRoundActivePlayerNum = this.nextPlayer.playerNum;
+        }
+        
+        this.$store.dispatch("finishRound", {
+          gameId: this.currentGameId,
+          playerToChangeLivesId: this.currentPlayer.id,
+          livesChange: -1,
+          nextRoundActivePlayerNum: nextRoundActivePlayerNum
+        })
+      }
     },
     playDoubtIt(){
       var previousPlayer = this.previousPlayer;
       var sumOfNumbers = this.countNumberInTheGame(previousPlayer.betNumber);
-      if(sumOfNumbers > previousPlayer.betQuantity){
+      if(sumOfNumbers >= previousPlayer.betQuantity){
         alert("Bet was "+previousPlayer.betQuantity+"x"+previousPlayer.betNumber+". Previous player was right! You lost the dice! It was "+sumOfNumbers+" of them.");
+        var nextRoundActivePlayerNum = this.currentPlayer.playerNum;
+        if(this.currentPlayer.numOfDices < 2) {
+          nextRoundActivePlayerNum = this.nextPlayer.playerNum;
+        }
+        
+        this.$store.dispatch("finishRound", {
+          gameId: this.currentGameId,
+          playerToChangeLivesId: this.currentPlayer.id,
+          livesChange: -1,
+          nextRoundActivePlayerNum: this.currentPlayer.playerNum
+        })
       }
       else {
         alert("Bet was "+previousPlayer.betQuantity+"x"+previousPlayer.betNumber+". Previous player was wrong and lost the dice! It was "+sumOfNumbers+" of them.");
+        var nextRoundActivePlayerNum = this.currentPlayer.playerNum;
+        if(this.previousPlayer.numOfDices < 2) {
+          nextRoundActivePlayerNum = this.currentPlayer.playerNum;
+        }
+        
+        this.$store.dispatch("finishRound", {
+          gameId: this.currentGameId,
+          playerToChangeLivesId: this.previousPlayer.id,
+          livesChange: -1,
+          nextRoundActivePlayerNum: this.previousPlayer.playerNum
+        })
       }
     },
     playYourBet(){
@@ -175,16 +230,11 @@ export default {
         betQuantity: this.betQuantity,
         betNumber: this.betNumber
       }).then(data => {
-        console.log("before setActivePlayer");
-        console.log(this.currentGameId);
-        console.log(this.nextPlayer.playerNum);
         this.$store.dispatch("setActivePlayer", {
           gameId: this.currentGameId,
           activePlayerNum: this.nextPlayer.playerNum
         })
       });
-      
-      //active player change to next one
     },
     countNumberInTheGame(numberToCount){
       var sum = 0;
@@ -215,7 +265,6 @@ export default {
         }
         return result;
     }
-    
   },
   mounted: function() {
     console.log("game mounted")

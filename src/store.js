@@ -167,7 +167,32 @@ export const store = new Vuex.Store({
 
             var gameRef = fb.gamesCollection.doc(gameId);
             return gameRef.update({activePlayerNum});
-        }
+        },
+        finishRound({}, data){
+            var gameId = data.gameId;
+            var playerToChangeLivesId = data.playerToChangeLivesId;
+            var livesChange = data.livesChange;
+            var nextRoundActivePlayerNum = data.nextRoundActivePlayerNum;
+
+            var players = this.getters.getGame(gameId).players;
+            var batch = fb.db.batch();
+
+            for(var i=0; i < players.length; i++){
+                var playerRf = fb.gamesCollection.doc(gameId).collection('players').doc(players[i].id);
+                var playerItem = players[i];
+                let currentRoll = this.getters.rollTheDices(playerItem.numOfDices);
+
+                if(playerItem.id == playerToChangeLivesId){
+                    var newLivesCount = playerItem.numOfDices + livesChange;
+                    currentRoll = this.getters.rollTheDices(newLivesCount);
+                    batch.update(playerRf, {"numOfDices" : newLivesCount});
+                }
+                batch.update(playerRf, {"betType": '', 'betNumber': 0, 'betQuantity': 0, "currentRoll": currentRoll});
+            }
+
+            fb.gamesCollection.doc(gameId).update({"activePlayerNum" : nextRoundActivePlayerNum});
+            batch.commit();
+        },
     }, 
     mutations: {
         setCurrentUserMutation(state, val) {
