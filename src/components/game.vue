@@ -1,12 +1,15 @@
 <template>
   <div id="game">
     <h1>{{ msg }}</h1>
-    <div v-if="gameInstance && gameInstance.status == 2">
+    <div v-if="gameInstance && (gameInstance.status == 1 || gameInstance.status == 2)">
       <div>Name: {{ gameInstance.name }}</div>
       <div>Active player: {{ gameInstance.activePlayerNum }}</div>
       <div>Max dices: {{ gameInstance.maxDices }}</div>
       <div>Status: {{ gameInstance.status }}</div>
       <div>Players: {{ gameInstance.players.length }}</div>
+    </div>
+
+    <div v-if="gameInstance && gameInstance.status == 2">
       <div style="border:solid black 1px;">
         <br>
         <div :key="player.id" v-for="player in gameInstance.players">{{player.email}} [NR: {{player.playerNum}}] 
@@ -24,13 +27,20 @@
         Number:<input type="number" v-model="betNumber"/>
       </div>
     </div>
-
     <div v-else>
       <div><input v-on:click="logout" type="button" value="Log out"/></div>
       <div><input v-if="isGameOwner" v-on:click="startTheGame" type="button" value="Start the game"/></div>
+      <div style="border:solid grey 1px;">
+        <br>
+        <div :key="player.id" v-for="player in gameInstance.players">{{player.email}}</div>
+         <br>
+      </div>
     </div>
    
-    <div v-if="currentUser != null">Logged as: {{currentUser.email}}</div>
+    <div v-if="currentUser != null">
+      Logged as: {{currentUser.email}}
+      <span v-if="isGameOwner">(owner)</span>
+    </div>
     <div><input v-on:click="leaveTheGame" type="button" value="Leave the game"/></div>
     
   </div>
