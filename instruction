@@ -13,7 +13,13 @@ Game status:
 + losowanie kosci przy starcie gry
 + wyswietlic liste graczy
 
-- mozliwosc wykonania jednej z akcji (sprawdzenie, podbicie, spot)
-- zapisanie akcji do uzytkownika i sprawdzenie warunkow gry
-- zmiana na kolejnego gracza
-- zakonczenie rundy i start nowej
++ mozliwosc wykonania jednej z akcji (sprawdzenie, podbicie, spot)
++ zakonczenie rundy i start nowej
++ zmiana na kolejnego gracza
++ zapisanie akcji do uzytkownika i sprawdzenie warunkow gry
+
+- dodanie ladnego wygladu w vuetify
+- dodanie obslugi wildchard jako jedynki w przeliczaniu liczb gdy ktos powie I doubt it
+- traktowanie jedynki jako wildchart
+- sprawdzanie czy aktualny bet jest na pewno wyzszy niz poprzedni
+- przy zakonczeniu gry ustawienie statusu na 3 
