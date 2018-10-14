@@ -10,8 +10,8 @@
     </div>
 
     <h1 v-if="!isStillInTheGame">Unfortunatelly you lost this time</h1>
-    <h1 v-if="isTheWinner">Congratulatinos! You won the game!</h1>
-    <div v-if="gameInstance.status == 2">
+    <h1 v-else-if="isTheWinner">Congratulatinos! You won the game!</h1>
+    <div v-else-if="gameInstance.status == 2">
       <div style="border:solid black 1px;">
         <br>
         <div :key="player.id" v-for="player in gameInstance.players">{{player.email}} [NR: {{player.playerNum}}] 
@@ -30,7 +30,7 @@
       </div>
     </div>
     <div v-else>
-      <div><input v-on:click="logout" type="button" value="Log out"/></div>
+      <!-- <div><input v-on:click="logout" type="button" value="Log out"/></div> -->
       <div><input v-if="isGameOwner" v-on:click="startTheGame" type="button" value="Start the game"/></div>
       <div style="border:solid grey 1px;">
         <br>
@@ -39,12 +39,14 @@
       </div>
     </div>
    
-    <div v-if="currentUser != null">
-      Logged as: {{currentUser.email}}
-      <span v-if="isGameOwner">(owner)</span>
-    </div>
-    <div><input v-on:click="leaveTheGame" type="button" value="Leave the game"/></div>
-    
+   <div>
+      <div v-if="currentUser != null">
+        Logged as: {{currentUser.email}}
+        <span v-if="isGameOwner">(owner)</span>
+      </div>
+      <div><input v-on:click="leaveTheGame" type="button" value="Leave the game"/></div>
+   </div>
+
   </div>
 </template>
 
@@ -108,7 +110,6 @@ export default {
     nextPlayer: function () {
         var players = this.activePlayers;
         var currentPlayerIndex = players.findIndex(x=> x.playerNum == this.currentPlayer.playerNum);
-        console.log("currentPLayer index:"+currentPlayerIndex)
         var previousPlayerIndex = currentPlayerIndex + 1;
         if(previousPlayerIndex > (players.length-1)){
           previousPlayerIndex = 0;
@@ -131,8 +132,7 @@ export default {
       return (this.currentPlayer && this.gameInstance && this.gameInstance.status == 2) ? (this.currentPlayer.numOfDices > 0) : true;
     },
     isTheWinner () {
-      //return (this.currentUser && this.gameInstance && this.gameInstance.status == 2) ? (this.currentPlayer.numOfDices > 0) : false;
-      return false;
+      return this.gameInstance.status != 1 && this.activePlayers.length == 1 && this.currentPlayer.numOfDices > 0;
     }
   },
   methods: {
