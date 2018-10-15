@@ -2,7 +2,11 @@ import Vue from 'vue'
 import App from './App.vue'
 import {router} from './routerConfig'
 import { store } from './store.js'
+import Vuetify from 'vuetify'
+import 'vuetify/dist/vuetify.min.css'
 const fb = require('./firebaseConfig.js')
+
+Vue.use(Vuetify)
 
 let app;
 
