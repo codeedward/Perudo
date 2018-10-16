@@ -1,8 +1,6 @@
 <template>
   <div id="board">
-    <h1>{{ msg }}</h1>
-    <div v-if="currentUser != null">Logged as: {{currentUser.email}}</div>
-    <div><input v-on:click="logout" type="button" value="Log out"/></div>
+    <!-- <div><input v-on:click="logout" type="button" value="Log out"/></div> -->
     <div>
       <div v-bind:key="game.name" v-for="game in availableGames">
         <input type="button" :disabled="game.status == 2" v-on:click="joinTheGame(game.id)" :value="game.name+ ' ('+ game.players.length + ')'"/> 
@@ -29,11 +27,6 @@ export default {
       ...mapState(['currentUser', 'availableGames'])
   },
   methods: {
-      logout(){
-          firebase.auth().signOut().then(()=>{
-              this.$router.replace('login');
-          });
-      },
       fetchGames(){
           this.$store.dispatch('fetchAvailableGames');
       },

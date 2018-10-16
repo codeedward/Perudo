@@ -1,6 +1,6 @@
 <template>
   <div id="login">
-      <v-app id="inspire">
+      <!-- <v-app id="inspire"> -->
         <v-content>
           <v-container fluid fill-height>
             <v-layout align-center justify-center>
@@ -26,7 +26,7 @@
             </v-layout>
           </v-container>
         </v-content>
-      </v-app>
+      <!-- </v-app> -->
   </div>
 </template>
 
@@ -46,8 +46,9 @@ export default {
           .then(
               (user) =>
               {
-                  this.$store.dispatch('setCurrentUser', {user: user.user})
-                  this.$router.replace('/board');
+                  this.$store.dispatch('setCurrentUser', {user: user.user}).then(()=>{
+                    this.$router.replace('/board');
+                  });
               },
               (err) =>
               {
