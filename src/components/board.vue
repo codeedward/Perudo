@@ -1,6 +1,77 @@
 <template>
   <div id="board">
-    <!-- <div><input v-on:click="logout" type="button" value="Log out"/></div> -->
+    <v-app>
+      <v-layout row>
+        <v-flex xs12 sm6 offset-sm3>
+          <v-card>
+            <v-toolbar color="light-blue" dark>
+              <v-spacer></v-spacer>
+                <v-toolbar-title>List of current games</v-toolbar-title>
+              <v-spacer></v-spacer>
+            </v-toolbar>
+    
+            <v-list two-line subheader>
+              <!-- <v-subheader inset>You are already in</v-subheader> -->
+              <v-list-tile
+                v-for="game in availableGames"
+                :key="game.name"
+                avatar
+                :disabled="game.status == 2"
+                v-on:click="joinTheGame(game.id)"
+              >
+                <v-list-tile-avatar>
+                  <v-icon v-if="game.status == 2">block</v-icon>
+                  <v-icon v-if="game.status == 1">forward</v-icon>
+                </v-list-tile-avatar>
+    
+                <v-list-tile-content>
+                  <v-list-tile-title>{{ game.name }}</v-list-tile-title>
+                  <v-list-tile-sub-title>{{game.createdOn}}</v-list-tile-sub-title>
+                </v-list-tile-content>
+
+                 <v-icon color="grey lighten-1">person</v-icon>
+                  {{game.players.length}}
+                <!-- <v-list-tile-action>
+                  <v-btn icon ripple>
+                    <v-icon color="grey lighten-1">person</v-icon>
+                    {{game.players.length}}
+                  </v-btn>
+                </v-list-tile-action> -->
+              </v-list-tile>
+    
+              <!-- <v-divider inset></v-divider>
+    
+              <v-subheader inset>Other</v-subheader>
+    
+              <v-list-tile
+                v-for="game in availableGames"
+                :key="game.name"
+                avatar
+          
+              >
+                <v-list-tile-avatar>
+                  <v-icon>person</v-icon>
+                </v-list-tile-avatar>
+    
+                <v-list-tile-content>
+                  <v-list-tile-title>{{ game.name }}</v-list-tile-title>
+                  <v-list-tile-sub-title>test</v-list-tile-sub-title>
+                </v-list-tile-content>
+    
+                <v-list-tile-action>
+                  <v-btn icon ripple>
+                    <v-icon color="grey lighten-1">person</v-icon>
+                  </v-btn>
+                </v-list-tile-action>
+              </v-list-tile> -->
+            </v-list>
+          </v-card>
+        </v-flex>
+      </v-layout>
+    </v-app>
+
+
+
     <div>
       <div v-bind:key="game.name" v-for="game in availableGames">
         <input type="button" :disabled="game.status == 2" v-on:click="joinTheGame(game.id)" :value="game.name+ ' ('+ game.players.length + ')'"/> 

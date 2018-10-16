@@ -9,7 +9,7 @@
         <v-spacer></v-spacer>
     
         <v-toolbar-items>
-          <v-btn flat v-if="currentUser">Board</v-btn>
+          <v-btn flat v-if="currentUser" to="/board">Board</v-btn>
           <v-btn flat v-if="currentUser" v-on:click="logout">
             <v-icon left>exit_to_app</v-icon>
              Logout
