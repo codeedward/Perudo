@@ -1,62 +1,109 @@
 <template>
-  <div v-if="gameInstance" id="game">
-    <h1>{{ msg }}</h1>
-    <div v-if="(gameInstance.status == 1 || gameInstance.status == 2)">
-      <div>Name: {{ gameInstance.name }}</div>
-      <div>Active player: {{ gameInstance.activePlayerNum }}</div>
-      <div>Max dices: {{ gameInstance.maxDices }}</div>
-      <div>Status: {{ gameInstance.status }}</div>
-      <div>Players: {{ gameInstance.players.length }}</div>
-    </div>
-
-    <h1 v-if="!isStillInTheGame">Unfortunatelly you lost this time</h1>
-    <h1 v-else-if="isTheWinner">Congratulatinos! You won the game!</h1>
-    <div v-else-if="gameInstance.status == 2">
-      <div style="border:solid black 1px;">
-        <br>
-        <div :key="player.id" v-for="player in gameInstance.players">{{player.email}} [NR: {{player.playerNum}}] 
-          <span :key="player.id+'_'+roll+'_'+index" v-for="(roll,index) in player.currentRoll">{{roll}}</span>
-          <span>(quantity: {{player.betQuantity}}, number: {{player.betNumber}})</span>
-          <span v-if="player.playerNum == gameInstance.activePlayerNum"> ----------------------------- Active player</span>
+<div v-if="gameInstance" id="game">
+  <v-app>
+    <v-layout row wrap ma-3>
+      <v-flex xs12 md4 lg5>
+        <v-card>
+          <v-toolbar dense color="light-blue" dark>
+            <v-toolbar-title>Players</v-toolbar-title>
+          </v-toolbar>
+          <v-list two-line>
+            <v-list-tile
+              v-for="player in gameInstance.players"
+              :key="player.email">
+             
+              <v-list-tile-action>
+                <v-icon v-if="player.playerNum == gameInstance.activePlayerNum" color="pink">star</v-icon>
+              </v-list-tile-action>
+  
+              <v-list-tile-content>
+                <v-list-tile-title>
+                  {{player.email}} 
+                  <!-- <span v-if="isGameOwner">(owner)</span> -->
+                </v-list-tile-title>
+                 
+                <v-list-tile-sub-title>
+                </v-list-tile-sub-title>
+              </v-list-tile-content>
+              <v-list-tile-avatar :key="player.id+'_'+roll+'_'+index" v-for="(roll,index) in player.currentRoll">
+                <!-- <img :src="getTheDice(roll).src"> -->
+                  <img :src="getTheDice(0).src">
+              </v-list-tile-avatar>
+              <v-list-tile-action></v-list-tile-action>
+            </v-list-tile>
+          </v-list>
+        </v-card>
+      </v-flex>
+      <v-flex xs12 md5 lg5 offset-md1 offset-lg1>       
+        <div v-if="(gameInstance.status == 1 )">
+          <div>Name: {{ gameInstance.name }}</div>
+          <div>Active player: {{ gameInstance.activePlayerNum }}</div>
+          <div>Max dices: {{ gameInstance.maxDices }}</div>
+          <div>Status: {{ gameInstance.status }}</div>
+          <div>Players: {{ gameInstance.players.length }}</div>
         </div>
-         <br>
-      </div>
-      <div v-if="isActivePlayer">
-        <input v-if="canPlaySpotOn" v-on:click="playSpotOn" type="button" value="Spot on"/>
-        <input v-if="canPlayDoubtIt" v-on:click="playDoubtIt" type="button" value="I doubt it!"/>
-        <input v-on:click="playYourBet" type="button" value="Make a bet!"/>
-        Quantity:<input type="number" v-model="betQuantity"/>
-        Number:<input type="number" v-model="betNumber"/>
-      </div>
-    </div>
-    <div v-else>
-      <!-- <div><input v-on:click="logout" type="button" value="Log out"/></div> -->
-      <div><input v-if="isGameOwner" v-on:click="startTheGame" type="button" value="Start the game"/></div>
-      <div style="border:solid grey 1px;">
-        <br>
-        <div :key="player.id" v-for="player in gameInstance.players">{{player.email}}</div>
-         <br>
-      </div>
-    </div>
-   
-   <div>
-      <div v-if="currentUser != null">
-        Logged as: {{currentUser.email}}
-        <span v-if="isGameOwner">(owner)</span>
-      </div>
-      <div><input v-on:click="leaveTheGame" type="button" value="Leave the game"/></div>
-   </div>
-
-  </div>
+        <h1 v-if="!isStillInTheGame">Unfortunatelly you lost this time</h1>
+        <h1 v-else-if="isTheWinner">Congratulatinos! You won the game!</h1>
+        <div v-else-if="gameInstance.status == 2">
+          <v-card>
+              <v-toolbar color="light-blue" dark>
+                <v-toolbar-title>Your roll</v-toolbar-title>
+                <v-spacer></v-spacer>
+                <v-btn icon>
+                  <v-icon>show dices</v-icon>
+                </v-btn>
+              </v-toolbar>
+              <v-container fluid grid-list-lg>
+                <v-layout row wrap>
+                  <v-flex xs12>
+                    <v-card-text class="text-md-center">
+                      <img class="dice currentPlayerDice" :key="currentPlayer.id+'_'+roll+'_'+index" v-for="(roll,index) in currentPlayer.currentRoll" :src="getTheDice(roll).src">
+                    </v-card-text>
+                  </v-flex>
+               </v-layout>
+            </v-container>
+          </v-card>
+          <div v-if="isActivePlayer">
+            <v-card>
+                <v-toolbar color="red" dark>
+                  <v-toolbar-title>Actions panel</v-toolbar-title>
+                  <v-spacer></v-spacer>
+                </v-toolbar>
+                <v-container fluid grid-list-lg>
+                  <v-layout row wrap>
+                    <v-flex xs12 class="text-md-center">
+                      <v-btn v-if="canPlaySpotOn" v-on:click="playSpotOn">Spot on</v-btn>
+                      <v-btn v-if="canPlayDoubtIt" v-on:click="playDoubtIt">I doubt it!</v-btn>
+                      <v-btn v-on:click="playYourBet" type="button">Make a bet!</v-btn>                   
+                    </v-flex>
+                    <v-flex xs12>
+                      Quantity:<v-text-field type="number" v-model="betQuantity"/>
+                      Number:
+                      <v-avatar :key="'selectRoll_'+num+'_'+index" v-for="num in selectNumberOptions" >
+                      <img :src="getTheDice(num).src">
+                      </v-avatar>
+                      <!-- <v-text-field type="number" v-model="betNumber"/> -->
+                    </v-flex>
+                </v-layout>
+              </v-container>
+            </v-card>
+           
+          </div>  
+        </div>
+        <div v-else>
+          <v-btn v-if="isGameOwner" v-on:click="startTheGame">Start the game</v-btn>
+       </div>
+      </v-flex>
+    </v-layout>
+  </v-app>
+</div>
+  <!-- </div> -->
 </template>
-
 <script>
 import firebase from 'firebase'
 import {mapState} from 'vuex'
 const fb = require('../firebaseConfig.js')
-
 const betAction = 'bet'
-
 export default {
   name: 'game',
   props: ['id'],
@@ -64,7 +111,8 @@ export default {
     return {
       msg: 'Content',
       betQuantity: 0,
-      betNumber: 0
+      betNumber: 0,
+      selectNumberOptions: [1,2,3,4,5,6]
     }
   },
   computed:{
@@ -264,6 +312,19 @@ export default {
           });
         }
         return result;
+    },
+    getTheDice(diceNum){
+      var dices = [
+          {num: 0 , src: "https://www.awesomedice.com/image/cache/data/blank-dice-black-d6-600x600.jpg"},
+          {num: 1 , src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQci5vAyvtWvp2qZ9e4CYWQlA7Up4Nkp7Fsjmbhd8mTKBzeGifv3A"},
+          {num: 2 , src: "https://thefiveplanets.org/b01/data/graphics/textures/dice/face2.jpg"},
+          {num: 3 , src: "https://image.freepik.com/icones-gratis/cubo-dados-da-vista-superior-na-face-com-tres-pontos_318-59490.jpg"},
+          {num: 4 , src: "http://shopforclipart.com/images/width-cliparts/27.jpg"},
+          {num: 5 , src: "https://carwad.net/sites/default/files/dice-face-106625-1911445.png"},
+          {num: 6 , src: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Dice-6-b.svg/1024px-Dice-6-b.svg.png"}
+        ];
+      var foundedDice = dices.find(x => x.num == diceNum);
+      return foundedDice;
     }
   },
   mounted: function() {
@@ -274,5 +335,10 @@ export default {
 </script>
 
 <style>
-
+.dice{
+  margin: 5px;
+}
+.currentPlayerDice{
+  width: 100px;
+}
 </style>
