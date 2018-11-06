@@ -77,18 +77,18 @@
                       <v-btn v-bind:color="betType == 'bet' ? 'light-blue': ''" v-on:click="selectYourBet('bet')" type="button">Make a bet!</v-btn>                   
                     </v-flex>
                     <v-flex xs12 class="text-md-center">
-                    
                       <div v-if="betType != null">
-                        Number:
-                        <v-avatar class="dice" :key="'selectRoll_'+num" v-for="num in selectNumberOptions" >
-                          <img v-bind:class="betNumber == num ? 'selectedDice': ''" :src="getTheDice(num).src" v-on:click="selectDice(num)">
-                        </v-avatar>
+                        <h2>Select dice:</h2>
+                        <img class="dice currentPlayerDice" :key="'selectRoll_'+num" v-for="num in selectNumberOptions"  v-bind:class="betNumber == num ? 'selectedDice': ''" :src="getTheDice(num).src" v-on:click="selectDice(num)">
                       </div>
-                      <div v-if="betNumber != null && betNumber > 0">
-                        Quantity: <v-text-field type="number" v-model="betQuantity"/>
-                        <v-spacer></v-spacer> 
-                        <v-btn v-on:click="playYourBet" type="button">Play your move!</v-btn>    
-                      </div>
+                    </v-flex>
+                      <v-flex xs12 class="text-md-center">
+                        <div v-if="betNumber != null && betNumber > 0">
+                          <h2>Type minimum quantity:</h2> 
+                          <v-text-field type="number" v-model="betQuantity"/>
+                          <v-spacer></v-spacer> 
+                          <v-btn v-on:click="playYourBet" type="button">Play your move!</v-btn>    
+                        </div>
                     </v-flex>
                 </v-layout>
               </v-container>
