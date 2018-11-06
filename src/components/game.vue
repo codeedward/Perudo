@@ -74,14 +74,21 @@
                     <v-flex xs12 class="text-md-center">
                       <v-btn v-if="canPlaySpotOn" v-on:click="playSpotOn">Spot on</v-btn>
                       <v-btn v-if="canPlayDoubtIt" v-on:click="playDoubtIt">I doubt it!</v-btn>
-                      <v-btn v-on:click="playYourBet" type="button">Make a bet!</v-btn>                   
+                      <v-btn v-bind:color="betType == 'bet' ? 'light-blue': ''" v-on:click="selectYourBet('bet')" type="button">Make a bet!</v-btn>                   
                     </v-flex>
-                    <v-flex xs12>
-                      Quantity:<v-text-field type="number" v-model="betQuantity"/>
-                      Number:
-                      <v-avatar :key="'selectRoll_'+num+'_'+index" v-for="num in selectNumberOptions" >
-                      <img :src="getTheDice(num).src">
-                      </v-avatar>
+                    <v-flex xs12 class="text-md-center">
+                    
+                      <div v-if="betType != null">
+                        Number:
+                        <v-avatar class="dice" :key="'selectRoll_'+num+'_'+index" v-for="num in selectNumberOptions" >
+                          <img v-bind:class="betNumber == num ? 'selectedDice': ''" :src="getTheDice(num).src" v-on:click="selectDice(num)">
+                        </v-avatar>
+                      </div>
+                      <div v-if="betNumber != null && betNumber > 0">
+                        Quantity: <v-text-field type="number" v-model="betQuantity"/>
+                        <v-spacer></v-spacer> 
+                        <v-btn v-on:click="playYourBet" type="button">Play your move!</v-btn>    
+                      </div>
                       <!-- <v-text-field type="number" v-model="betNumber"/> -->
                     </v-flex>
                 </v-layout>
@@ -110,6 +117,7 @@ export default {
   data () {
     return {
       msg: 'Content',
+      betType: null,
       betQuantity: 0,
       betNumber: 0,
       selectNumberOptions: [1,2,3,4,5,6]
@@ -325,6 +333,12 @@ export default {
         ];
       var foundedDice = dices.find(x => x.num == diceNum);
       return foundedDice;
+    },
+    selectYourBet(betType){
+      this.betType = betType;
+    },
+    selectDice(betNumber){
+      this.betNumber = betNumber;
     }
   },
   mounted: function() {
@@ -340,5 +354,8 @@ export default {
 }
 .currentPlayerDice{
   width: 100px;
+}
+.selectedDice{
+  border: 4px solid dodgerblue;
 }
 </style>
