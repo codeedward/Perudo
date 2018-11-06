@@ -227,6 +227,7 @@ export default {
           livesChange: 1,
           nextRoundActivePlayerNum: this.currentPlayer.playerNum
         })
+        this.clearSelections();
       }
       else {
         alert("Bet was "+previousPlayer.betQuantity+"x"+previousPlayer.betNumber+". Unfortunatelly you lost the dice! It was "+sumOfNumbers+" of them.");
@@ -257,12 +258,13 @@ export default {
           gameId: this.currentGameId,
           playerToChangeLivesId: this.currentPlayer.id,
           livesChange: -1,
-          nextRoundActivePlayerNum: this.currentPlayer.playerNum
+          nextRoundActivePlayerNum: nextRoundActivePlayerNum
         })
+        this.clearSelections();
       }
       else {
         alert("Bet was "+previousPlayer.betQuantity+"x"+previousPlayer.betNumber+". Previous player was wrong and lost the dice! It was "+sumOfNumbers+" of them.");
-        var nextRoundActivePlayerNum = this.currentPlayer.playerNum;
+        var nextRoundActivePlayerNum = this.previousPlayer.playerNum;
         if(this.previousPlayer.numOfDices < 2) {
           nextRoundActivePlayerNum = this.currentPlayer.playerNum;
         }
@@ -271,7 +273,7 @@ export default {
           gameId: this.currentGameId,
           playerToChangeLivesId: this.previousPlayer.id,
           livesChange: -1,
-          nextRoundActivePlayerNum: this.previousPlayer.playerNum
+          nextRoundActivePlayerNum: nextRoundActivePlayerNum
         })
       }
     },
