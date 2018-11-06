@@ -25,7 +25,7 @@
                 <v-list-tile-sub-title>
                 </v-list-tile-sub-title>
               </v-list-tile-content>
-              <v-list-tile-avatar :key="player.id+'_'+roll+'_'+index" v-for="(roll,index) in player.currentRoll">
+              <v-list-tile-avatar :key="'listPlayerDice_'+player.id+'_'+roll+'_'+index" v-for="(roll,index) in player.currentRoll">
                 <!-- <img :src="getTheDice(roll).src"> -->
                   <img :src="getTheDice(0).src">
               </v-list-tile-avatar>
@@ -45,7 +45,7 @@
         <h1 v-if="!isStillInTheGame">Unfortunatelly you lost this time</h1>
         <h1 v-else-if="isTheWinner">Congratulatinos! You won the game!</h1>
         <div v-else-if="gameInstance.status == 2">
-          <v-card>
+          <v-card v-if="currentPlayer != null">
               <v-toolbar color="light-blue" dark>
                 <v-toolbar-title>Your roll</v-toolbar-title>
                 <v-spacer></v-spacer>
@@ -57,7 +57,7 @@
                 <v-layout row wrap>
                   <v-flex xs12>
                     <v-card-text class="text-md-center">
-                      <img class="dice currentPlayerDice" :key="currentPlayer.id+'_'+roll+'_'+index" v-for="(roll,index) in currentPlayer.currentRoll" :src="getTheDice(roll).src">
+                      <img class="dice currentPlayerDice" :key="'currentPlayerDices_'+currentPlayer.id+'_'+roll+'_'+index" v-for="(roll,index) in currentPlayer.currentRoll" :src="getTheDice(roll).src">
                     </v-card-text>
                   </v-flex>
                </v-layout>
@@ -80,7 +80,7 @@
                     
                       <div v-if="betType != null">
                         Number:
-                        <v-avatar class="dice" :key="'selectRoll_'+num+'_'+index" v-for="num in selectNumberOptions" >
+                        <v-avatar class="dice" :key="'selectRoll_'+num" v-for="num in selectNumberOptions" >
                           <img v-bind:class="betNumber == num ? 'selectedDice': ''" :src="getTheDice(num).src" v-on:click="selectDice(num)">
                         </v-avatar>
                       </div>
@@ -89,7 +89,6 @@
                         <v-spacer></v-spacer> 
                         <v-btn v-on:click="playYourBet" type="button">Play your move!</v-btn>    
                       </div>
-                      <!-- <v-text-field type="number" v-model="betNumber"/> -->
                     </v-flex>
                 </v-layout>
               </v-container>
@@ -104,7 +103,6 @@
     </v-layout>
   </v-app>
 </div>
-  <!-- </div> -->
 </template>
 <script>
 import firebase from 'firebase'
@@ -116,10 +114,9 @@ export default {
   props: ['id'],
   data () {
     return {
-      msg: 'Content',
       betType: null,
-      betQuantity: 0,
-      betNumber: 0,
+      betQuantity: null,
+      betNumber: null,
       selectNumberOptions: [1,2,3,4,5,6]
     }
   },
@@ -339,12 +336,22 @@ export default {
     },
     selectDice(betNumber){
       this.betNumber = betNumber;
+    },
+    clearSelections(){
+      this.betType = null;
+      this.betQuantity = null;
+      this.betNumber = null;
     }
   },
   mounted: function() {
     console.log("game mounted")
     this.init();
-  }
+  },
+  watch: {
+    isActivePlayer: function () {
+      this.clearSelections();
+    }
+  },
 }
 </script>
 
