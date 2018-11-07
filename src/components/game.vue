@@ -25,8 +25,7 @@
                 <v-list-tile-sub-title>
                 </v-list-tile-sub-title>
               </v-list-tile-content>
-              <v-list-tile-avatar :key="'listPlayerDice_'+player.id+'_'+roll+'_'+index" v-for="(roll,index) in player.currentRoll">
-                <!-- <img :src="getTheDice(roll).src"> -->
+              <v-list-tile-avatar tile :key="'listPlayerDice_'+player.id+'_'+roll+'_'+index" v-for="(roll,index) in player.currentRoll">
                   <img :src="getTheDice(0).src">
               </v-list-tile-avatar>
               <v-list-tile-action></v-list-tile-action>
@@ -322,13 +321,13 @@ export default {
     },
     getTheDice(diceNum){
       var dices = [
-          {num: 0 , src: "https://www.awesomedice.com/image/cache/data/blank-dice-black-d6-600x600.jpg"},
-          {num: 1 , src: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQci5vAyvtWvp2qZ9e4CYWQlA7Up4Nkp7Fsjmbhd8mTKBzeGifv3A"},
-          {num: 2 , src: "https://thefiveplanets.org/b01/data/graphics/textures/dice/face2.jpg"},
-          {num: 3 , src: "https://image.freepik.com/icones-gratis/cubo-dados-da-vista-superior-na-face-com-tres-pontos_318-59490.jpg"},
-          {num: 4 , src: "http://shopforclipart.com/images/width-cliparts/27.jpg"},
-          {num: 5 , src: "https://carwad.net/sites/default/files/dice-face-106625-1911445.png"},
-          {num: 6 , src: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Dice-6-b.svg/1024px-Dice-6-b.svg.png"}
+          {num: 0 , src: "./src/assets/dices/0.png"},
+          {num: 1 , src: "./src/assets/dices/1.png"},
+          {num: 2 , src: "./src/assets/dices/2.png"},
+          {num: 3 , src: "./src/assets/dices/3.png"},
+          {num: 4 , src: "./src/assets/dices/4.png"},
+          {num: 5 , src: "./src/assets/dices/5.png"},
+          {num: 6 , src: "./src/assets/dices/6.png"}
         ];
       var foundedDice = dices.find(x => x.num == diceNum);
       return foundedDice;
