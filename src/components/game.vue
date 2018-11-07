@@ -20,11 +20,18 @@
                 <v-list-tile-title>
                   {{player.email}} 
                   <!-- <span v-if="isGameOwner">(owner)</span> -->
+                  <template v-if="gameInstance.status == 2 && player.betNumber != ''">
+                    [
+                    <span>{{player.betQuantity}} x </span>
+                    <img width="22px" :src="getTheDice(player.betNumber).src">
+                    ]
+                  </template>
                 </v-list-tile-title>
-                 
+
                 <v-list-tile-sub-title>
                 </v-list-tile-sub-title>
               </v-list-tile-content>
+
               <v-list-tile-avatar tile :key="'listPlayerDice_'+player.id+'_'+roll+'_'+index" v-for="(roll,index) in player.currentRoll">
                   <img :src="getTheDice(0).src">
               </v-list-tile-avatar>
@@ -70,6 +77,20 @@
                 </v-toolbar>
                 <v-container fluid grid-list-lg>
                   <v-layout row wrap>
+                    <v-flex xs12 class="text-md-center">
+                      <h3>Current bet: {{previousPlayer.betQuantity}} x </h3>
+                      <img width="40px" :src="getTheDice(previousPlayer.betNumber).src" left>
+                        <!-- <v-container fluid grid-list-lg>
+                          <v-layout row wrap>
+                            <v-flex xs6>
+                                <h3>Current bet: {{previousPlayer.betQuantity}} x </h3>
+                            </v-flex>
+                            <v-flex xs6 align-left>
+                              <img width="40px" :src="getTheDice(previousPlayer.betNumber).src">
+                            </v-flex>
+                          </v-layout>
+                        </v-container> -->
+                    </v-flex>
                     <v-flex xs12 class="text-md-center">
                       <v-btn v-if="canPlaySpotOn" v-on:click="playSpotOn">Spot on</v-btn>
                       <v-btn v-if="canPlayDoubtIt" v-on:click="playDoubtIt">I doubt it!</v-btn>
