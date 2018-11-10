@@ -5,8 +5,10 @@ import { store } from './store.js'
 import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
 const fb = require('./firebaseConfig.js')
+import moment from 'moment'
 
 Vue.use(Vuetify)
+Vue.prototype.moment = moment
 
 let app;
 

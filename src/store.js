@@ -57,7 +57,7 @@ export const store = new Vuex.Store({
             return new Promise((resolve, reject) => {
                 fb.gamesCollection.add({
                     name: 'Game' + Date.now(),
-                    createdOn: new Date(),
+                    createdOn: Date.now(),
                     status: 1,
                     maxDices: 5,
                     activePlayerNum: 1,

@@ -2,10 +2,10 @@
   <div id="board">
     <v-app>
       <v-layout row wrap>
-        <v-flex xs12 sm6 offset-sm3>
+        <v-flex xs12 sm6 offset-sm3 mt-2>
           <v-btn color="light-blue" dark v-on:click="createNewGame" type="button">Create new game</v-btn>
         </v-flex>
-        <v-flex xs12 sm6 offset-sm3>
+        <v-flex xs12 sm6 offset-sm3 mt-2>
           <v-card>
             <v-toolbar color="light-blue" dark>
               <v-spacer></v-spacer>
@@ -29,7 +29,7 @@
     
                 <v-list-tile-content>
                   <v-list-tile-title>{{ game.name }}</v-list-tile-title>
-                  <v-list-tile-sub-title>{{game.createdOn}}</v-list-tile-sub-title>
+                  <v-list-tile-sub-title>Created at: {{moment(game.createdOn).format('YYYY-MM-DD HH:MM')}}</v-list-tile-sub-title>
                 </v-list-tile-content>
 
                  <v-icon color="grey lighten-1">person</v-icon>
