@@ -1,7 +1,10 @@
 <template>
   <div id="board">
     <v-app>
-      <v-layout row>
+      <v-layout row wrap>
+        <v-flex xs12 sm6 offset-sm3>
+          <v-btn color="light-blue" dark v-on:click="createNewGame" type="button">Create new game</v-btn>
+        </v-flex>
         <v-flex xs12 sm6 offset-sm3>
           <v-card>
             <v-toolbar color="light-blue" dark>
@@ -69,15 +72,6 @@
         </v-flex>
       </v-layout>
     </v-app>
-
-
-
-    <div>
-      <div v-bind:key="game.name" v-for="game in availableGames">
-        <input type="button" :disabled="game.status == 2" v-on:click="joinTheGame(game.id)" :value="game.name+ ' ('+ game.players.length + ')'"/> 
-      </div>
-    </div>
-    <div><input v-on:click="createNewGame" type="button" value="Create new"/></div>
   </div>
 </template>
 
