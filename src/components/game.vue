@@ -8,7 +8,7 @@
             <v-toolbar-title>Players</v-toolbar-title>
           </v-toolbar>
           <v-list two-line>
-            <v-list-tile
+            <v-list-tile v-bind:class="player.playerNum == currentPlayer.playerNum ? 'currentPlayerOnTheList' : ''"
               v-for="player in gameInstance.players"
               :key="player.email">
              
@@ -23,7 +23,7 @@
                   <template v-if="gameInstance.status == 2 && player.betNumber != ''">
                     [
                     <span>{{player.betQuantity}} x </span>
-                    <img width="22px" :src="getTheDice(player.betNumber).src">
+                    <img style="position: relative; top: 3px" width="22px" :src="getTheDice(player.betNumber).src">
                     ]
                   </template>
                 </v-list-tile-title>
@@ -78,18 +78,7 @@
                 <v-container fluid grid-list-lg>
                   <v-layout row wrap>
                     <v-flex xs12 class="text-md-center">
-                      <h3>Current bet: {{previousPlayer.betQuantity}} x </h3>
-                      <img width="40px" :src="getTheDice(previousPlayer.betNumber).src" left>
-                        <!-- <v-container fluid grid-list-lg>
-                          <v-layout row wrap>
-                            <v-flex xs6>
-                                <h3>Current bet: {{previousPlayer.betQuantity}} x </h3>
-                            </v-flex>
-                            <v-flex xs6 align-left>
-                              <img width="40px" :src="getTheDice(previousPlayer.betNumber).src">
-                            </v-flex>
-                          </v-layout>
-                        </v-container> -->
+                      <h3>Current bet: {{previousPlayer.betQuantity}} x <img style="position: relative; top: 10px" width="40px" :src="getTheDice(previousPlayer.betNumber).src" left></h3>
                     </v-flex>
                     <v-flex xs12 class="text-md-center">
                       <v-btn v-if="canPlaySpotOn" v-on:click="playSpotOn">Spot on</v-btn>
@@ -386,5 +375,8 @@ export default {
 }
 .selectedDice{
   border: 4px solid dodgerblue;
+}
+.currentPlayerOnTheList{
+  background-color:lightskyblue;
 }
 </style>
