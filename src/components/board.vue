@@ -3,9 +3,7 @@
     <v-app>
       <v-layout row wrap>
         <v-flex xs12 sm6 offset-sm3 mt-2>
-          <v-btn color="light-blue" dark v-on:click="createNewGame" type="button">Create new game</v-btn>
-        </v-flex>
-        <v-flex xs12 sm6 offset-sm3 mt-2>
+            <v-btn color="light-blue" dark v-on:click="createNewGame" type="button">Create new game</v-btn>
           <v-card>
             <v-toolbar color="light-blue" dark>
               <v-spacer></v-spacer>
