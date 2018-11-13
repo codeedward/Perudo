@@ -8,7 +8,7 @@
             <v-toolbar-title>Players</v-toolbar-title>
           </v-toolbar>
           <v-list two-line>
-            <v-list-tile v-bind:class="player.playerNum == currentPlayer.playerNum ? 'currentPlayerOnTheList' : ''"
+            <v-list-tile v-bind:class="player.id == currentPlayer.id ? 'currentPlayerOnTheList' : ''"
               v-for="player in gameInstance.players"
               :key="player.email">
              

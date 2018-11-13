@@ -28,17 +28,14 @@ export const store = new Vuex.Store({
             var result = null;
             if(state.availableGames)
             {
-                console.log("availableToJoinGames");
                 result = state.availableGames.filter(game => game.status == 1 && game.players.find(el => {return el.id == state.currentUser.uid}) == null);
             }
             return result;
         },
         userGames: state => {
             var result = null;
-            console.log("userGames0");
             if(state.availableGames && state.currentUser)
             {
-                console.log("userGames1");
                 result = state.availableGames.filter(
                     game => game.players.find(el => {return el.id == state.currentUser.uid}) != null
                 );
