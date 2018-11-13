@@ -14,17 +14,45 @@
             </v-toolbar>
     
             <v-list two-line subheader>
-              <!-- <v-subheader inset>You are already in</v-subheader> -->
+              <v-subheader class="subheaderItem" inset>You are already in:</v-subheader>
+              <!-- <v-divider inset></v-divider> -->
               <v-list-tile
-                v-for="game in availableGames"
+                v-for="game in userGames"
                 :key="game.name"
                 avatar
-                :disabled="game.status == 2"
                 v-on:click="joinTheGame(game.id)"
               >
                 <v-list-tile-avatar>
-                  <v-icon v-if="game.status == 2">block</v-icon>
-                  <v-icon v-if="game.status == 1">forward</v-icon>
+                  <v-icon>person</v-icon>
+                </v-list-tile-avatar>
+    
+                <v-list-tile-content>
+                  <v-list-tile-title>{{ game.name }} {{game.status == 2? "(in progress)" : ""}}</v-list-tile-title>
+                  <v-list-tile-sub-title>Created at: {{moment(game.createdOn).format('YYYY-MM-DD HH:MM')}}</v-list-tile-sub-title>
+                </v-list-tile-content>
+
+                 <v-icon color="grey lighten-1">person</v-icon>
+                  {{game.players.length}}
+                <!-- <v-list-tile-action>
+                  <v-btn icon ripple>
+                    <v-icon color="grey lighten-1">person</v-icon>
+                    {{game.players.length}}
+                  </v-btn>
+                </v-list-tile-action> -->
+              </v-list-tile>
+    
+              <v-divider inset></v-divider>
+              <v-subheader class="subheaderItem" inset>New games waiting for you to join:</v-subheader>
+              <!-- <v-divider inset></v-divider> -->
+
+               <v-list-tile
+                v-for="game in availableToJoinGames"
+                :key="game.name"
+                avatar
+                v-on:click="joinTheGame(game.id)"
+              >
+                <v-list-tile-avatar>
+                  <v-icon>forward</v-icon>
                 </v-list-tile-avatar>
     
                 <v-list-tile-content>
@@ -41,32 +69,6 @@
                   </v-btn>
                 </v-list-tile-action> -->
               </v-list-tile>
-    
-              <!-- <v-divider inset></v-divider>
-    
-              <v-subheader inset>Other</v-subheader>
-    
-              <v-list-tile
-                v-for="game in availableGames"
-                :key="game.name"
-                avatar
-          
-              >
-                <v-list-tile-avatar>
-                  <v-icon>person</v-icon>
-                </v-list-tile-avatar>
-    
-                <v-list-tile-content>
-                  <v-list-tile-title>{{ game.name }}</v-list-tile-title>
-                  <v-list-tile-sub-title>test</v-list-tile-sub-title>
-                </v-list-tile-content>
-    
-                <v-list-tile-action>
-                  <v-btn icon ripple>
-                    <v-icon color="grey lighten-1">person</v-icon>
-                  </v-btn>
-                </v-list-tile-action>
-              </v-list-tile> -->
             </v-list>
           </v-card>
         </v-flex>
@@ -78,6 +80,7 @@
 <script>
 import firebase from 'firebase'
 import {mapState} from 'vuex'
+import { mapGetters } from 'vuex'
 import { currentUser } from '../firebaseConfig.js';
 const fb = require('../firebaseConfig.js')
 
@@ -89,7 +92,8 @@ export default {
     }
   },
   computed:{
-      ...mapState(['currentUser', 'availableGames'])
+      ...mapState(['currentUser']),
+      ...mapGetters(['userGames', 'availableToJoinGames'])
   },
   methods: {
       fetchGames(){
@@ -119,5 +123,8 @@ export default {
 </script>
 
 <style>
+.subheaderItem{
 
+  color:#03a9f4!important;
+}
 </style>
