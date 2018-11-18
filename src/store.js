@@ -79,7 +79,8 @@ export const store = new Vuex.Store({
                     status: 1,
                     maxDices: 5,
                     activePlayerNum: 1,
-                    createdByUid: this.state.currentUser.uid
+                    createdByUid: this.state.currentUser.uid,
+                    isStartOfNewRound: true
                 }).then((data)=>{
                     var gameId = data.id;
                     dispatch('addPlayerIntoGame', {gameId: gameId})
@@ -122,9 +123,11 @@ export const store = new Vuex.Store({
                 playerNum: playerNum,
                 numOfDices: numOfDices,
                 currentRoll: [],
-                betType: '',
+                betType: "",
                 betNumber: 0,
                 betQuantity: 0,
+                finishedRoundUserId: 123,
+                finishedRoundReasonText: "test"
             })
         },
         changeGameStatus({}, data){
@@ -173,16 +176,13 @@ export const store = new Vuex.Store({
             var betNumber = data.betNumber;
             var betQuantity = data.betQuantity;
             var playerRef = fb.gamesCollection.doc(gameId).collection("players").doc(currentUser.uid);
-            return playerRef.update({betType, betNumber, betQuantity});
+            return playerRef.update({betType, betNumber, betQuantity}).then(()=>{
+                fb.gamesCollection.doc(gameId).update({isStartOfNewRound: false});
+            });
         },
         setActivePlayer({}, data){
             var gameId = data.gameId;
             var activePlayerNum = data.activePlayerNum;
-          
-            console.log("setActivePlayer");
-            console.log(gameId);
-            console.log(activePlayerNum);
-
             var gameRef = fb.gamesCollection.doc(gameId);
             return gameRef.update({activePlayerNum});
         },
@@ -191,6 +191,7 @@ export const store = new Vuex.Store({
             var playerToChangeLivesId = data.playerToChangeLivesId;
             var livesChange = data.livesChange;
             var nextRoundActivePlayerNum = data.nextRoundActivePlayerNum;
+            var finishedRoundReasonText = data.finishedRoundReasonText;
 
             var players = this.getters.getGame(gameId).players;
             var batch = fb.db.batch();
@@ -199,16 +200,30 @@ export const store = new Vuex.Store({
                 var playerRf = fb.gamesCollection.doc(gameId).collection('players').doc(players[i].id);
                 var playerItem = players[i];
                 let currentRoll = this.getters.rollTheDices(playerItem.numOfDices);
+                var currentUser = this.state.currentUser;
 
                 if(playerItem.id == playerToChangeLivesId){
                     var newLivesCount = playerItem.numOfDices + livesChange;
                     currentRoll = this.getters.rollTheDices(newLivesCount);
                     batch.update(playerRf, {"numOfDices" : newLivesCount});
                 }
-                batch.update(playerRf, {"betType": '', 'betNumber': 0, 'betQuantity': 0, "currentRoll": currentRoll});
+                batch.update(playerRf, 
+                {
+                    "betType": '',
+                    'betNumber': 0, 
+                    'betQuantity': 0, 
+                    "currentRoll": currentRoll, 
+                    "finishedRoundReasonText": finishedRoundReasonText,
+                    "finishedRoundUserId": currentUser.uid
+                });
             }
 
-            fb.gamesCollection.doc(gameId).update({"activePlayerNum" : nextRoundActivePlayerNum});
+            fb.gamesCollection.doc(gameId).update(
+                {
+                    "activePlayerNum" : nextRoundActivePlayerNum, 
+                    isStartOfNewRound: true
+                }
+            );
             batch.commit();
         },
     }, 

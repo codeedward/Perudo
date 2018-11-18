@@ -199,6 +199,9 @@ export default {
         this.$store.dispatch('changeGameStatus',  {gameId: this.gameInstance.id, status: 3});
       }      
       return thereIsAWinnerAlready;
+    },
+    isStartOfNewRound(){
+      return this.gameInstance && this.currentPlayer ? this.gameInstance.isStartOfNewRound : null;
     }
   },
   methods: {
@@ -238,7 +241,8 @@ export default {
           gameId: this.currentGameId,
           playerToChangeLivesId: this.currentPlayer.id,
           livesChange: 1,
-          nextRoundActivePlayerNum: this.currentPlayer.playerNum
+          nextRoundActivePlayerNum: this.currentPlayer.playerNum,
+          finishedRoundReasonText: "spotted on and WON the dice."
         })
         this.clearSelections();
       }
@@ -253,7 +257,8 @@ export default {
           gameId: this.currentGameId,
           playerToChangeLivesId: this.currentPlayer.id,
           livesChange: -1,
-          nextRoundActivePlayerNum: nextRoundActivePlayerNum
+          nextRoundActivePlayerNum: nextRoundActivePlayerNum,
+          finishedRoundReasonText: "spotted on and LOST the dice."
         })
       }
     },
@@ -271,7 +276,8 @@ export default {
           gameId: this.currentGameId,
           playerToChangeLivesId: this.currentPlayer.id,
           livesChange: -1,
-          nextRoundActivePlayerNum: nextRoundActivePlayerNum
+          nextRoundActivePlayerNum: nextRoundActivePlayerNum,
+          finishedRoundReasonText: "doubted correctly and ["+ previousPlayer.email +"] LOST the dice."
         })
         this.clearSelections();
       }
@@ -286,13 +292,13 @@ export default {
           gameId: this.currentGameId,
           playerToChangeLivesId: this.previousPlayer.id,
           livesChange: -1,
-          nextRoundActivePlayerNum: nextRoundActivePlayerNum
+          nextRoundActivePlayerNum: nextRoundActivePlayerNum,
+          finishedRoundReasonText: "doubted incorrectly and LOST the dice."
         })
       }
     },
     playYourBet(){
       var minimumQuantityForThisNumber = this.getMinimumPossibleBetForCurrentRollSelected();
-      console.log("min:"+minimumQuantityForThisNumber);
       if(this.betQuantity >= minimumQuantityForThisNumber){
         this.$store.dispatch("setPlayerBet", {
           gameId: this.currentGameId,
@@ -407,6 +413,18 @@ export default {
   watch: {
     isActivePlayer: function () {
       this.clearSelections();
+    },
+    isStartOfNewRound(){      
+      if(
+        this.gameInstance && 
+        this.currentPlayer && 
+        this.gameInstance.isStartOfNewRound && 
+        this.currentPlayer.finishedRoundUserId && 
+        this.currentPlayer.id != this.currentPlayer.finishedRoundUserId){
+        setTimeout(()=>{
+          alert("Previous round has finished by: [" + this.getPlayerByUid(this.currentPlayer.finishedRoundUserId).email + "]. \nHe " + this.currentPlayer.finishedRoundReasonText)
+        }, 500);
+      }
     }
   },
 }
