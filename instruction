@@ -18,8 +18,11 @@ Game status:
 + zmiana na kolejnego gracza
 + zapisanie akcji do uzytkownika i sprawdzenie warunkow gry
 
-- dodanie ladnego wygladu w vuetify
-- dodanie obslugi wildchard jako jedynki w przeliczaniu liczb gdy ktos powie I doubt it
-- traktowanie jedynki jako wildchart
-- sprawdzanie czy aktualny bet jest na pewno wyzszy niz poprzedni
-- przy zakonczeniu gry ustawienie statusu na 3 
++ dodanie ladnego wygladu w vuetify
++ dodanie obslugi wildchard jako jedynki w przeliczaniu liczb gdy ktos powie I doubt it
++ traktowanie jedynki jako wildchart
++ sprawdzanie czy aktualny bet jest na pewno wyzszy niz poprzedni
++ przy zakonczeniu gry ustawienie statusu na 3 
+
+- poprawienie errora co sie ukazuje gdy gracz dolaczy do nowostworzonej gry innego gracza (nie swojej)
+- poprawienie wygladu panelu akcji

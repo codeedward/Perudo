@@ -126,8 +126,8 @@ export const store = new Vuex.Store({
                 betType: "",
                 betNumber: 0,
                 betQuantity: 0,
-                finishedRoundUserId: 123,
-                finishedRoundReasonText: "test"
+                finishedRoundUserId: null,
+                finishedRoundReasonText: ""
             })
         },
         changeGameStatus({}, data){

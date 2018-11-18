@@ -194,7 +194,7 @@ export default {
       return (this.currentPlayer && this.gameInstance && this.gameInstance.status > 1) ? (this.currentPlayer.numOfDices <= 0) : false;
     },
     isTheWinner () {
-      var thereIsAWinnerAlready = this.gameInstance.status != 1 && this.activePlayers.length == 1 && this.currentPlayer.numOfDices > 0;
+      var thereIsAWinnerAlready = this.gameInstance && this.gameInstance.status != 1 && this.activePlayers.length == 1 && this.currentPlayer && this.currentPlayer.numOfDices > 0;
       if(thereIsAWinnerAlready){
         this.$store.dispatch('changeGameStatus',  {gameId: this.gameInstance.id, status: 3});
       }      
@@ -414,7 +414,9 @@ export default {
     isActivePlayer: function () {
       this.clearSelections();
     },
-    isStartOfNewRound(){      
+    isStartOfNewRound: function() {      
+      var self = this;
+      console.log("isStartOfNewRound");
       if(
         this.gameInstance && 
         this.currentPlayer && 
@@ -422,7 +424,7 @@ export default {
         this.currentPlayer.finishedRoundUserId && 
         this.currentPlayer.id != this.currentPlayer.finishedRoundUserId){
         setTimeout(()=>{
-          alert("Previous round has finished by: [" + this.getPlayerByUid(this.currentPlayer.finishedRoundUserId).email + "]. \nHe " + this.currentPlayer.finishedRoundReasonText)
+          alert("Previous round has finished by: [" + self.getPlayerByUid(self.currentPlayer.finishedRoundUserId).email + "]. \nHe " + self.currentPlayer.finishedRoundReasonText)
         }, 500);
       }
     }
