@@ -78,7 +78,7 @@
                 <v-container fluid grid-list-lg>
                   <v-layout row wrap>
                     <v-flex xs12 class="text-md-center">
-                      <h3>Current bet: {{previousPlayer.betQuantity}} x <img style="position: relative; top: 10px" width="40px" :src="getTheDice(previousPlayer.betNumber).src" left></h3>
+                      <h3 v-if="previousPlayer.betNumber > 0">Current bet: {{previousPlayer.betQuantity}} x <img style="position: relative; top: 10px" width="40px" :src="getTheDice(previousPlayer.betNumber).src" left></h3>
                     </v-flex>
                     <v-flex xs12 class="text-md-center">
                       <v-btn v-if="canPlaySpotOn" v-on:click="playSpotOn">Spot on</v-btn>
