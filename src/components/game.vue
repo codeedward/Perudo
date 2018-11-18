@@ -303,11 +303,46 @@ export default {
     countNumberInTheGame(numberToCount){
       var sum = 0;
       var players = this.activePlayers;
-      for(var i=0; i<players.length; i++){
+      for(var i=0; i < players.length; i++){
         var player = players[i];
-        sum+= player.currentRoll.filter(function(x){return x == numberToCount}).length;
+        sum+= player.currentRoll.filter(function(x){return x == numberToCount || x == 1}).length;
       }
       return sum;
+    },
+    getMinimumPossibleBetForCurrentRollSelected(){
+      var players = this.gameInstance.players;
+      var result = 0;
+      if(this.previousPlayer.betNumber == null) { 
+        result = 0;
+      }
+      else if(this.betNumber == this.previousPlayer.betNumber){
+        result = parseInt(this.previousPlayer.betQuantity) + 1;
+      }
+      else if(this.betNumber == 1){
+        var calculatedBetQuantity = Math.ceil(parseInt(this.previousPlayer.betQuantity)/2);
+        var didWeHaveThisBetBefore = players.find((x)=>{
+          return ((x.betNumber == this.betNumber && x.betQuantity == calculatedBetQuantity) || (x.betNumber == 1 && x.betQuantity == calculatedBetQuantity))
+          });
+        if(didWeHaveThisBetBefore) {
+          calculatedBetQuantity++;
+        }
+        result = calculatedBetQuantity;
+      }
+      else if(this.previousPlayer.betNumber == 1){
+        var calculatedBetQuantity = parseInt(this.previousPlayer.betQuantity) * 2;
+        var didWeHaveThisBetBefore = players.find((x)=>{ return (x.betNumber >= this.betNumber && x.betQuantity == calculatedBetQuantity)});
+        if(didWeHaveThisBetBefore) {
+          calculatedBetQuantity++;
+        }
+        result = calculatedBetQuantity;
+      }
+      else if(this.betNumber > this.previousPlayer.betNumber) {
+        result = this.previousPlayer.betQuantity;
+      }
+      else {
+        result = parseInt(this.previousPlayer.betQuantity) + 1;
+      }
+      return result;
     },
     getPlayerByNum(playerNum){
         var result = null;
@@ -347,6 +382,7 @@ export default {
     },
     selectDice(betNumber){
       this.betNumber = betNumber;
+      this.betQuantity = this.getMinimumPossibleBetForCurrentRollSelected();
     },
     clearSelections(){
       this.betType = null;
