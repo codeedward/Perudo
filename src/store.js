@@ -37,7 +37,7 @@ export const store = new Vuex.Store({
             if(state.availableGames && state.currentUser)
             {
                 result = state.availableGames.filter(
-                    game => game.players.find(el => {return el.id == state.currentUser.uid}) != null
+                    game => game.players.find(el => {return el.id == state.currentUser.uid}) != null && game.status < 3
                 );
             }
             return result;
@@ -49,7 +49,7 @@ export const store = new Vuex.Store({
         },
         fetchAvailableGames({ commit }) {
             console.log('fetchAvailableGames');
-            fb.gamesCollection.where('status','<=', 2).onSnapshot(gamesSnapshot => {
+            fb.gamesCollection.where('status','<=', 3).onSnapshot(gamesSnapshot => {
                 let gamesArray = [];
 
                 gamesSnapshot.forEach(doc=>{

@@ -48,7 +48,7 @@
           <div>Status: {{ gameInstance.status }}</div>
           <div>Players: {{ gameInstance.players.length }}</div>
         </div>
-        <h1 v-if="!isStillInTheGame">Unfortunatelly you lost this time</h1>
+        <h1 v-if="isLostTheGame">Unfortunatelly you lost this time</h1>
         <h1 v-else-if="isTheWinner">Congratulatinos! You won the game!</h1>
         <div v-else-if="gameInstance.status == 2">
           <v-card v-if="currentPlayer != null">
@@ -88,7 +88,7 @@
                     <v-flex xs12 class="text-md-center">
                       <div v-if="betType != null">
                         <h2>Select dice:</h2>
-                        <img class="dice currentPlayerDice" :key="'selectRoll_'+num" v-for="num in selectNumberOptions"  v-bind:class="betNumber == num ? 'selectedDice': ''" :src="getTheDice(num).src" v-on:click="selectDice(num)">
+                        <img class="dice currentPlayerDice" :key="'selectRoll_'+num" v-for="num in selectNumberOptions" v-bind:class="betNumber == num ? 'selectedDice': ''" :src="getTheDice(num).src" v-on:click="selectDice(num)">
                       </div>
                     </v-flex>
                       <v-flex xs12 class="text-md-center">
@@ -190,11 +190,15 @@ export default {
     canPlaySpotOn(){
       return this.canPlayDoubtIt;
     },
-    isStillInTheGame () {
-      return (this.currentPlayer && this.gameInstance && this.gameInstance.status == 2) ? (this.currentPlayer.numOfDices > 0) : true;
+    isLostTheGame () {
+      return (this.currentPlayer && this.gameInstance && this.gameInstance.status > 1) ? (this.currentPlayer.numOfDices <= 0) : false;
     },
     isTheWinner () {
-      return this.gameInstance.status != 1 && this.activePlayers.length == 1 && this.currentPlayer.numOfDices > 0;
+      var thereIsAWinnerAlready = this.gameInstance.status != 1 && this.activePlayers.length == 1 && this.currentPlayer.numOfDices > 0;
+      if(thereIsAWinnerAlready){
+        this.$store.dispatch('changeGameStatus',  {gameId: this.gameInstance.id, status: 3});
+      }      
+      return thereIsAWinnerAlready;
     }
   },
   methods: {
