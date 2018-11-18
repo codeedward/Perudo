@@ -287,18 +287,24 @@ export default {
       }
     },
     playYourBet(){
-      //chech if bet is correct
-      this.$store.dispatch("setPlayerBet", {
-        gameId: this.currentGameId,
-        betType: betAction,
-        betQuantity: this.betQuantity,
-        betNumber: this.betNumber
-      }).then(data => {
-        this.$store.dispatch("setActivePlayer", {
+      var minimumQuantityForThisNumber = this.getMinimumPossibleBetForCurrentRollSelected();
+      console.log("min:"+minimumQuantityForThisNumber);
+      if(this.betQuantity >= minimumQuantityForThisNumber){
+        this.$store.dispatch("setPlayerBet", {
           gameId: this.currentGameId,
-          activePlayerNum: this.nextPlayer.playerNum
-        })
-      });
+          betType: betAction,
+          betQuantity: this.betQuantity,
+          betNumber: this.betNumber
+        }).then(data => {
+          this.$store.dispatch("setActivePlayer", {
+            gameId: this.currentGameId,
+            activePlayerNum: this.nextPlayer.playerNum
+          })
+        });
+      }
+      else {
+        alert("Wrong bet. Please checkout and correct it.");
+      }
     },
     countNumberInTheGame(numberToCount){
       var sum = 0;
@@ -312,8 +318,8 @@ export default {
     getMinimumPossibleBetForCurrentRollSelected(){
       var players = this.gameInstance.players;
       var result = 0;
-      if(this.previousPlayer.betNumber == null) { 
-        result = 0;
+      if(!this.previousPlayer.betNumber) { 
+        result = 1;
       }
       else if(this.betNumber == this.previousPlayer.betNumber){
         result = parseInt(this.previousPlayer.betQuantity) + 1;
