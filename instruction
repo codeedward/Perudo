@@ -26,3 +26,5 @@ Game status:
 
 - poprawienie errora co sie ukazuje gdy gracz dolaczy do nowostworzonej gry innego gracza (nie swojej)
 - poprawienie wygladu panelu akcji
+- opcja usuniecia gry
+- powiadomienie gry gracz wykona ruch

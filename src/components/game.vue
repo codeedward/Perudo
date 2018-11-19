@@ -242,12 +242,14 @@ export default {
           playerToChangeLivesId: this.currentPlayer.id,
           livesChange: 1,
           nextRoundActivePlayerNum: this.currentPlayer.playerNum,
-          finishedRoundReasonText: "spotted on and WON the dice."
+          finishedRoundReasonText: "Ahh, nice one, player ["+ this.currentPlayer.email +"] spotted on and WON the dice. \n" + 
+          "It was exactly " + previousPlayer.betQuantity +"x"+ previousPlayer.betNumber
         })
         this.clearSelections();
       }
       else {
-        alert("Bet was "+previousPlayer.betQuantity+"x"+previousPlayer.betNumber+". Unfortunatelly you lost the dice! It was "+sumOfNumbers+" of them.");
+        var reasonText = "Bet was "+ previousPlayer.betQuantity +"x"+ previousPlayer.betNumber +". However it was "+ sumOfNumbers +" of them.";
+        alert("Sorry, you LOST the dice. \n" + reasonText);
         var nextRoundActivePlayerNum = this.currentPlayer.playerNum;
         if(this.currentPlayer.numOfDices < 2) {
           nextRoundActivePlayerNum = this.nextPlayer.playerNum;
@@ -258,15 +260,17 @@ export default {
           playerToChangeLivesId: this.currentPlayer.id,
           livesChange: -1,
           nextRoundActivePlayerNum: nextRoundActivePlayerNum,
-          finishedRoundReasonText: "spotted on and LOST the dice."
+          finishedRoundReasonText: "Good! Player ["+ this.currentPlayer.email +"] was tried to spot on. Fortunetelly he LOST the dice. \n" + reasonText
         })
       }
     },
     playDoubtIt(){
       var previousPlayer = this.previousPlayer;
       var sumOfNumbers = this.countNumberInTheGame(previousPlayer.betNumber);
+      var reasonText = "Bet was "+ previousPlayer.betQuantity +"x"+ previousPlayer.betNumber +". However it was "+ sumOfNumbers +" of them.";
+
       if(sumOfNumbers >= previousPlayer.betQuantity){
-        alert("Bet was "+previousPlayer.betQuantity+"x"+previousPlayer.betNumber+". Previous player was right! You lost the dice! It was "+sumOfNumbers+" of them.");
+        alert("Sorry, previous player was right. You LOST the dice. \n" + reasonText);
         var nextRoundActivePlayerNum = this.currentPlayer.playerNum;
         if(this.currentPlayer.numOfDices < 2) {
           nextRoundActivePlayerNum = this.nextPlayer.playerNum;
@@ -277,12 +281,12 @@ export default {
           playerToChangeLivesId: this.currentPlayer.id,
           livesChange: -1,
           nextRoundActivePlayerNum: nextRoundActivePlayerNum,
-          finishedRoundReasonText: "doubted correctly and ["+ previousPlayer.email +"] LOST the dice."
+          finishedRoundReasonText: "Good! Player ["+ this.currentPlayer.email +"] doubted and LOST the dice. \n" + reasonText
         })
         this.clearSelections();
       }
       else {
-        alert("Bet was "+previousPlayer.betQuantity+"x"+previousPlayer.betNumber+". Previous player was wrong and lost the dice! It was "+sumOfNumbers+" of them.");
+        alert("Good! Previous player was wrong and LOST the dice! \n" + reasonText);
         var nextRoundActivePlayerNum = this.previousPlayer.playerNum;
         if(this.previousPlayer.numOfDices < 2) {
           nextRoundActivePlayerNum = this.currentPlayer.playerNum;
@@ -293,7 +297,7 @@ export default {
           playerToChangeLivesId: this.previousPlayer.id,
           livesChange: -1,
           nextRoundActivePlayerNum: nextRoundActivePlayerNum,
-          finishedRoundReasonText: "doubted incorrectly and LOST the dice."
+          finishedRoundReasonText: "Sorry, player ["+ this.currentPlayer.email +"] doubted correctly. You LOST the dice. \n" + reasonText
         })
       }
     },
@@ -417,16 +421,18 @@ export default {
     isStartOfNewRound: function() {      
       var self = this;
       console.log("isStartOfNewRound");
-      if(
+    
+      setTimeout(()=>{
+        if(
         this.gameInstance && 
         this.currentPlayer && 
         this.gameInstance.isStartOfNewRound && 
         this.currentPlayer.finishedRoundUserId && 
         this.currentPlayer.id != this.currentPlayer.finishedRoundUserId){
-        setTimeout(()=>{
-          alert("Previous round has finished by: [" + self.getPlayerByUid(self.currentPlayer.finishedRoundUserId).email + "]. \nHe " + self.currentPlayer.finishedRoundReasonText)
-        }, 500);
-      }
+          //alert("Previous round has finished by: [" + self.getPlayerByUid(self.currentPlayer.finishedRoundUserId).email + "]. \n" + self.currentPlayer.finishedRoundReasonText)
+          alert(self.currentPlayer.finishedRoundReasonText);
+        }
+      }, 700);
     }
   },
 }
