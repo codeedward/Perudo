@@ -420,22 +420,21 @@ export default {
     },
     isStartOfNewRound: function() {      
       var self = this;
-      console.log("check isStartOfNewRound",this.gameInstance, this.currentPlayer);
-      if(this.gameInstance && this.currentPlayer)
-      {
-        console.log("variables:", this.gameInstance.isStartOfNewRound, this.currentPlayer.id != this.currentPlayer.finishedRoundUserId, this.currentPlayer.id, this.currentPlayer.finishedRoundUserId);
-      }
+      // console.log("check isStartOfNewRound",self.gameInstance, self.currentPlayer, this.currentUser.uid);
+      // if(self.gameInstance && self.currentPlayer)
+      // {
+      //   console.log("variables:", self.gameInstance.isStartOfNewRound, self.currentPlayer.id != self.gameInstance.finishedRoundUserId, self.currentPlayer.id, self.gameInstance.finishedRoundUserId);
+      // }
 
       setTimeout(()=>{
-        if(this.gameInstance && 
-          this.currentPlayer && 
-          this.gameInstance.isStartOfNewRound && 
-          this.currentPlayer.finishedRoundUserId && 
-          this.currentPlayer.id != this.currentPlayer.finishedRoundUserId){
-            console.log("isStartOfNewRound");
-            alert(self.currentPlayer.finishedRoundReasonText);
+        if(self.gameInstance && 
+          self.currentPlayer && 
+          self.gameInstance.isStartOfNewRound && 
+          self.gameInstance.finishedRoundUserId != self.currentUser.uid){
+            //console.log("isStartOfNewRound");
+            alert(self.gameInstance.finishedRoundReasonText);
           }
-      }, 1000);
+      }, 500);
     }
   },
 }

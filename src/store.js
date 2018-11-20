@@ -80,7 +80,9 @@ export const store = new Vuex.Store({
                     maxDices: 5,
                     activePlayerNum: 1,
                     createdByUid: this.state.currentUser.uid,
-                    isStartOfNewRound: true
+                    isStartOfNewRound: true,
+                    finishedRoundUserId: null,
+                    finishedRoundReasonText: ""
                 }).then((data)=>{
                     var gameId = data.id;
                     dispatch('addPlayerIntoGame', {gameId: gameId})
@@ -125,9 +127,7 @@ export const store = new Vuex.Store({
                 currentRoll: [],
                 betType: "",
                 betNumber: 0,
-                betQuantity: 0,
-                finishedRoundUserId: null,
-                finishedRoundReasonText: ""
+                betQuantity: 0
             })
         },
         changeGameStatus({}, data){
@@ -177,7 +177,12 @@ export const store = new Vuex.Store({
             var betQuantity = data.betQuantity;
             var playerRef = fb.gamesCollection.doc(gameId).collection("players").doc(currentUser.uid);
             return playerRef.update({betType, betNumber, betQuantity}).then(()=>{
-                fb.gamesCollection.doc(gameId).update({isStartOfNewRound: false});
+                fb.gamesCollection.doc(gameId).update(
+                    {
+                        isStartOfNewRound: false,
+                        finishedRoundUserId: null,
+                        finishedRoundReasonText: ""
+                    });
             });
         },
         setActivePlayer({}, data){
@@ -212,16 +217,16 @@ export const store = new Vuex.Store({
                     "betType": '',
                     'betNumber': 0, 
                     'betQuantity': 0, 
-                    "currentRoll": currentRoll, 
-                    "finishedRoundReasonText": finishedRoundReasonText,
-                    "finishedRoundUserId": currentUser.uid
+                    "currentRoll": currentRoll
                 });
             }
 
             fb.gamesCollection.doc(gameId).update(
                 {
                     "activePlayerNum" : nextRoundActivePlayerNum, 
-                    isStartOfNewRound: true
+                    "isStartOfNewRound": true,
+                    "finishedRoundReasonText": finishedRoundReasonText,
+                    "finishedRoundUserId": currentUser.uid
                 }
             );
             batch.commit();
