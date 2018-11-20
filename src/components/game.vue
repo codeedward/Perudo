@@ -201,7 +201,7 @@ export default {
       return thereIsAWinnerAlready;
     },
     isStartOfNewRound(){
-      return this.gameInstance && this.currentPlayer ? this.gameInstance.isStartOfNewRound : null;
+      return this.gameInstance ? this.gameInstance.isStartOfNewRound : false;
     }
   },
   methods: {
@@ -243,12 +243,12 @@ export default {
           livesChange: 1,
           nextRoundActivePlayerNum: this.currentPlayer.playerNum,
           finishedRoundReasonText: "Ahh, nice one, player ["+ this.currentPlayer.email +"] spotted on and WON the dice. \n" + 
-          "It was exactly " + previousPlayer.betQuantity +"x"+ previousPlayer.betNumber
+          "It was exactly " + previousPlayer.betQuantity +"x["+ previousPlayer.betNumber + "]"
         })
         this.clearSelections();
       }
       else {
-        var reasonText = "Bet was "+ previousPlayer.betQuantity +"x"+ previousPlayer.betNumber +". However it was "+ sumOfNumbers +" of them.";
+        var reasonText = "Bet was "+ previousPlayer.betQuantity +"x["+ previousPlayer.betNumber +"]. However it was "+ sumOfNumbers +" of them.";
         alert("Sorry, you LOST the dice. \n" + reasonText);
         var nextRoundActivePlayerNum = this.currentPlayer.playerNum;
         if(this.currentPlayer.numOfDices < 2) {
@@ -267,7 +267,7 @@ export default {
     playDoubtIt(){
       var previousPlayer = this.previousPlayer;
       var sumOfNumbers = this.countNumberInTheGame(previousPlayer.betNumber);
-      var reasonText = "Bet was "+ previousPlayer.betQuantity +"x"+ previousPlayer.betNumber +". However it was "+ sumOfNumbers +" of them.";
+      var reasonText = "Bet was "+ previousPlayer.betQuantity +"x["+ previousPlayer.betNumber +"]. However it was "+ sumOfNumbers +" of them.";
 
       if(sumOfNumbers >= previousPlayer.betQuantity){
         alert("Sorry, previous player was right. You LOST the dice. \n" + reasonText);
@@ -420,19 +420,22 @@ export default {
     },
     isStartOfNewRound: function() {      
       var self = this;
-      console.log("isStartOfNewRound");
-    
+      console.log("check isStartOfNewRound",this.gameInstance, this.currentPlayer);
+      if(this.gameInstance && this.currentPlayer)
+      {
+        console.log("variables:", this.gameInstance.isStartOfNewRound, this.currentPlayer.id != this.currentPlayer.finishedRoundUserId, this.currentPlayer.id, this.currentPlayer.finishedRoundUserId);
+      }
+
       setTimeout(()=>{
-        if(
-        this.gameInstance && 
-        this.currentPlayer && 
-        this.gameInstance.isStartOfNewRound && 
-        this.currentPlayer.finishedRoundUserId && 
-        this.currentPlayer.id != this.currentPlayer.finishedRoundUserId){
-          //alert("Previous round has finished by: [" + self.getPlayerByUid(self.currentPlayer.finishedRoundUserId).email + "]. \n" + self.currentPlayer.finishedRoundReasonText)
-          alert(self.currentPlayer.finishedRoundReasonText);
-        }
-      }, 700);
+        if(this.gameInstance && 
+          this.currentPlayer && 
+          this.gameInstance.isStartOfNewRound && 
+          this.currentPlayer.finishedRoundUserId && 
+          this.currentPlayer.id != this.currentPlayer.finishedRoundUserId){
+            console.log("isStartOfNewRound");
+            alert(self.currentPlayer.finishedRoundReasonText);
+          }
+      }, 1000);
     }
   },
 }
